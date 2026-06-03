@@ -5,12 +5,12 @@ import { CameraStream } from "@/components/dashboard/CameraStream";
 import { VitalCard } from "@/components/dashboard/VitalCard";
 import { DetectionTable } from "@/components/dashboard/DetectionTable";
 import { AlertPopup } from "@/components/dashboard/AlertPopup";
+import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export default function DashboardPage() {
   const { state, connected } = useLiveState();
   const primary = state?.primary ?? null;
-  const cameraOk = state?.camera_ok ?? false;
   const fps = state?.fps ?? 0;
   const hasHigh = (state?.persons ?? []).some((p) => p.status === "HIGH");
 
@@ -32,16 +32,19 @@ export default function DashboardPage() {
             Theo dõi nguy cơ sốt theo thời gian thực · ước lượng từ camera RGB
           </p>
         </div>
-        <div className="ml-auto flex items-center gap-2 rounded-full border border-line2 bg-surface px-3 py-1.5">
-          <span
-            className={cn(
-              "h-2 w-2 rounded-full",
-              connected ? "animate-pulse-dot bg-mint" : "bg-red",
-            )}
-          />
-          <span className="font-mono text-xs text-txtdim">
-            {connected ? "REALTIME CONNECTED" : "DISCONNECTED"}
-          </span>
+        <div className="ml-auto flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2 rounded-full border border-line2 bg-surface px-3 py-1.5">
+            <span
+              className={cn(
+                "h-2 w-2 rounded-full",
+                connected ? "animate-pulse-dot bg-mint" : "bg-red",
+              )}
+            />
+            <span className="font-mono text-xs text-txtdim">
+              {connected ? "REALTIME CONNECTED" : "DISCONNECTED"}
+            </span>
+          </div>
+          <span className="font-mono text-[10px] text-txtfaint">{api.base}</span>
         </div>
       </div>
 
@@ -58,7 +61,7 @@ export default function DashboardPage() {
       {/* Lưới chính */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.7fr_1fr]">
         <div className="flex flex-col gap-5">
-          <CameraStream cameraOk={cameraOk} fps={fps} />
+          <CameraStream cameraState={state?.camera_state} fps={fps} />
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <VitalCard label="Heart Rate" value="—" unit="bpm" hint="rPPG · Pha 3" />

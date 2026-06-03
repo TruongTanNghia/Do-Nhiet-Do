@@ -9,8 +9,12 @@ export interface PersonLive {
   bbox: number[];
 }
 
+export type CameraState = "off" | "on" | "error";
+
 export interface LiveState {
   camera_ok: boolean;
+  camera_state: CameraState;
+  active: boolean;
   fps: number;
   timestamp: number;
   persons: PersonLive[];
