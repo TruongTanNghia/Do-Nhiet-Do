@@ -2,30 +2,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
-import type { LiveState } from "@/types";
+import type { PersonLive } from "@/types";
 
-/** Phát chuông + popup khi alert_count tăng (có cảnh báo HIGH mới). M11. */
-export function AlertPopup({ state }: { state: LiveState | null }) {
+/** Phát chuông + popup khi alertCount tăng (có cảnh báo HIGH mới). M11. */
+export function AlertPopup({ alertCount, persons }: { alertCount: number; persons: PersonLive[] }) {
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState<{ id: number; temp: number | null; risk: number | null } | null>(null);
   const lastCount = useRef<number>(-1);
 
   useEffect(() => {
-    if (!state) return;
     if (lastCount.current === -1) {
-      lastCount.current = state.alert_count; // bỏ qua lần đầu
+      lastCount.current = alertCount;
       return;
     }
-    if (state.alert_count > lastCount.current) {
-      lastCount.current = state.alert_count;
-      const hi = state.persons.find((p) => p.status === "HIGH") ?? state.primary;
+    if (alertCount > lastCount.current) {
+      lastCount.current = alertCount;
+      const hi = persons.find((p) => p.status === "HIGH") ?? null;
       setInfo(hi ? { id: hi.id, temp: hi.temp, risk: hi.risk } : null);
       setOpen(true);
       beep();
       const t = setTimeout(() => setOpen(false), 6000);
       return () => clearTimeout(t);
     }
-  }, [state]);
+  }, [alertCount, persons]);
 
   if (!open || !info) return null;
 
@@ -42,7 +41,7 @@ export function AlertPopup({ state }: { state: LiveState | null }) {
               <b className="text-red">{info.risk ?? "--"}%</b>
             </p>
             <p className="mt-1 text-[11px] text-txtfaint">
-              Snapshot đã lưu — vui lòng kiểm tra thủ công bằng nhiệt kế.
+              Chỉ là ước lượng — vui lòng kiểm tra thủ công bằng nhiệt kế.
             </p>
           </div>
           <button onClick={() => setOpen(false)} className="text-txtfaint hover:text-txt">
